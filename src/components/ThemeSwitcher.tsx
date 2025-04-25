@@ -10,7 +10,7 @@ import {
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu';
 import { useTheme } from '@/context/ThemeContext';
-import { Theme as ThemeIcon } from 'lucide-react';
+import { Palette } from 'lucide-react'; // Changed from Theme to Palette which exists in lucide-react
 
 const ThemeSwitcher = () => {
   const { theme, colorTheme, setTheme, setColorTheme } = useTheme();
@@ -19,7 +19,7 @@ const ThemeSwitcher = () => {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="outline" size="icon" className="fixed bottom-5 right-5 rounded-full h-10 w-10">
-          <ThemeIcon size={18} />
+          <Palette size={18} /> {/* Changed from ThemeIcon to Palette */}
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">

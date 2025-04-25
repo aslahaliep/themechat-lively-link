@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useTheme } from '@/context/ThemeContext';
 import ChatSidebar from '@/components/ChatSidebar';
@@ -7,6 +6,7 @@ import ThemeSwitcher from '@/components/ThemeSwitcher';
 import { Conversation, Message, conversations as initialConversations } from '@/data/chatData';
 import { useToast } from "@/components/ui/use-toast";
 import { useIsMobile } from '@/hooks/use-mobile';
+import { Button } from '@/components/ui/button';
 
 const Index = () => {
   const [conversations, setConversations] = useState(initialConversations);
@@ -20,16 +20,14 @@ const Index = () => {
   const handleSendMessage = (content: string) => {
     if (!activeConversation) return;
     
-    // Create a new message
     const newMessage: Message = {
       id: `msg_${Date.now()}`,
       content,
-      senderId: 'user1', // Current user
+      senderId: 'user1',
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       status: 'sent'
     };
     
-    // Update the conversation with the new message
     const updatedConversations = conversations.map(conv => {
       if (conv.id === activeConversation.id) {
         return {
@@ -43,7 +41,6 @@ const Index = () => {
     
     setConversations(updatedConversations);
     
-    // Update the active conversation
     const updatedActiveConversation = updatedConversations.find(
       conv => conv.id === activeConversation.id
     );
@@ -52,7 +49,6 @@ const Index = () => {
       setActiveConversation(updatedActiveConversation);
     }
     
-    // Simulate message delivery after a delay
     setTimeout(() => {
       const deliveredConversations = updatedConversations.map(conv => {
         if (conv.id === activeConversation.id) {
@@ -74,7 +70,6 @@ const Index = () => {
       
       setConversations(deliveredConversations);
       
-      // Update the active conversation
       const deliveredActiveConversation = deliveredConversations.find(
         conv => conv.id === activeConversation.id
       );
@@ -84,12 +79,11 @@ const Index = () => {
       }
     }, 1000);
     
-    // Simulate read receipt after another delay
     setTimeout(() => {
       const readConversations = conversations.map(conv => {
         if (conv.id === activeConversation.id) {
           const readMessages = conv.messages.map(msg => {
-            if (msg.senderId === 'user1') { // Current user's messages
+            if (msg.senderId === 'user1') {
               return { ...msg, status: 'read' as const };
             }
             return msg;
@@ -110,7 +104,6 @@ const Index = () => {
       
       setConversations(readConversations);
       
-      // Update active conversation
       const readActiveConversation = readConversations.find(
         conv => conv.id === activeConversation.id
       );
@@ -120,15 +113,12 @@ const Index = () => {
       }
     }, 2500);
     
-    // Simulate reply after a delay for the first conversation only (demo)
     if (activeConversation.id === 'conv1') {
       setTimeout(() => {
-        // Find the contact for this conversation
         const contact = activeConversation.participants.find(p => p.id !== 'user1');
         
         if (!contact) return;
         
-        // Create a reply message
         const replyMessage: Message = {
           id: `msg_${Date.now() + 1}`,
           content: "Thanks for the update! Looking forward to seeing it.",
@@ -137,7 +127,6 @@ const Index = () => {
           status: 'read'
         };
         
-        // Update conversations with the reply
         const repliedConversations = conversations.map(conv => {
           if (conv.id === activeConversation.id) {
             return {
@@ -152,7 +141,6 @@ const Index = () => {
         
         setConversations(repliedConversations);
         
-        // Update active conversation
         const repliedActiveConversation = repliedConversations.find(
           conv => conv.id === activeConversation.id
         );
@@ -169,14 +157,11 @@ const Index = () => {
     }
   };
   
-  // Toggle sidebar on mobile
   const toggleSidebar = () => {
     setShowSidebar(!showSidebar);
   };
   
-  // Handler for selecting a conversation
   const handleSelectConversation = (conversation: Conversation) => {
-    // Mark all messages as read
     const updatedConversation = {
       ...conversation,
       unreadCount: 0
@@ -184,7 +169,6 @@ const Index = () => {
     
     setActiveConversation(updatedConversation);
     
-    // Update conversations
     setConversations(
       conversations.map(conv => 
         conv.id === conversation.id 
@@ -193,7 +177,6 @@ const Index = () => {
       )
     );
     
-    // On mobile, hide sidebar after selecting a conversation
     if (isMobile) {
       setShowSidebar(false);
     }
@@ -201,7 +184,6 @@ const Index = () => {
   
   return (
     <div className="h-screen flex flex-col bg-background">
-      {/* Mobile Header with Menu Toggle */}
       {isMobile && (
         <div className="p-3 bg-primary text-primary-foreground flex items-center justify-between">
           <h1 className="text-lg font-semibold">
@@ -218,9 +200,7 @@ const Index = () => {
         </div>
       )}
       
-      {/* Main Content */}
       <div className="flex-1 flex overflow-hidden">
-        {/* Sidebar - conditionally shown on mobile */}
         {(showSidebar || !isMobile) && (
           <div className={`${isMobile ? 'w-full' : 'w-80'} flex-shrink-0 h-full`}>
             <ChatSidebar 
@@ -230,7 +210,6 @@ const Index = () => {
           </div>
         )}
         
-        {/* Chat Area - conditionally shown on mobile */}
         {(!showSidebar || !isMobile) && activeConversation && (
           <div className="flex-1 h-full">
             <ChatArea 
@@ -240,7 +219,6 @@ const Index = () => {
           </div>
         )}
         
-        {/* Empty State */}
         {(!showSidebar || !isMobile) && !activeConversation && (
           <div className="flex-1 flex items-center justify-center p-6 bg-muted/30">
             <div className="text-center">
@@ -254,7 +232,6 @@ const Index = () => {
         )}
       </div>
       
-      {/* Theme Switcher */}
       <ThemeSwitcher />
     </div>
   );
