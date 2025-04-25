@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useTheme } from '@/context/ThemeContext';
 import { Conversation, conversations, currentUser } from '@/data/chatData';
@@ -5,6 +6,7 @@ import { Avatar } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { Input } from '@/components/ui/input';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { MessageCircle, Search } from 'lucide-react';
 
 interface ChatSidebarProps {
