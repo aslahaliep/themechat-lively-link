@@ -1,11 +1,11 @@
-
-import React from 'react';
+import React, { useState } from 'react';
 import { useTheme } from '@/context/ThemeContext';
 import { Conversation, conversations, currentUser } from '@/data/chatData';
 import { Avatar } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
-import { MessageCircle } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { MessageCircle, Search } from 'lucide-react';
 
 interface ChatSidebarProps {
   activeConversation: Conversation | null;
@@ -17,6 +17,21 @@ const ChatSidebar = ({
   setActiveConversation 
 }: ChatSidebarProps) => {
   const { theme } = useTheme();
+  const [searchQuery, setSearchQuery] = useState('');
+  
+  const filteredConversations = conversations.filter(conversation => {
+    const otherParticipant = conversation.participants.find(
+      p => p.id !== currentUser.id
+    );
+    
+    if (!otherParticipant) return false;
+    
+    const searchLower = searchQuery.toLowerCase();
+    return (
+      otherParticipant.name.toLowerCase().includes(searchLower) ||
+      conversation.lastMessage?.content.toLowerCase().includes(searchLower)
+    );
+  });
   
   return (
     <div className="w-full h-full flex flex-col bg-sidebar border-r border-sidebar-border">
@@ -44,10 +59,15 @@ const ChatSidebar = ({
       {/* Search Bar */}
       <div className="p-3">
         <div className="relative">
-          <input
+          <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
+            <Search className="h-4 w-4 text-sidebar-foreground/60" />
+          </div>
+          <Input
             type="text"
             placeholder="Search or start new chat"
-            className="w-full p-2 pl-4 pr-8 rounded-lg bg-sidebar-accent text-sidebar-foreground placeholder:text-sidebar-foreground/60 focus:outline-none focus:ring-1 focus:ring-sidebar-ring"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full pl-10 pr-4 bg-sidebar-accent text-sidebar-foreground placeholder:text-sidebar-foreground/60"
           />
         </div>
       </div>
@@ -55,8 +75,8 @@ const ChatSidebar = ({
       <Separator className="bg-sidebar-border" />
 
       {/* Conversation List */}
-      <div className="flex-1 overflow-y-auto">
-        {conversations.map(conversation => {
+      <ScrollArea className="flex-1">
+        {filteredConversations.map(conversation => {
           const otherParticipant = conversation.participants.find(
             p => p.id !== currentUser.id
           );
@@ -105,7 +125,7 @@ const ChatSidebar = ({
             </div>
           );
         })}
-      </div>
+      </ScrollArea>
     </div>
   );
 };
